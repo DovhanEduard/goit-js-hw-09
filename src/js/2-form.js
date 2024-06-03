@@ -4,56 +4,57 @@ const formData = {
 };
 
 const formElem = document.querySelector('.feedback-form');
-const emailElem = formElem.elements.email;
-const messageElem = formElem.elements.message;
 
 formElem.addEventListener('input', e => {
-  const inputValue = e.target.value;
+  const inputValue = e.target.value.trim();
   const elemNameAttr = e.target.getAttribute('name');
 
-  if (elemNameAttr === 'email') {
-    formData.email = inputValue;
-    saveToLocalStorage('feedback-form-state', formData);
-  } else if (elemNameAttr === 'message') {
-    formData.message = inputValue;
-    saveToLocalStorage('feedback-form-state', formData);
-  }
+  formData[elemNameAttr] = inputValue;
+
+  saveToLocalStorage('feedback-form-state', formData);
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.length > 0) {
-    const localData = loadFromLocalStorage('feedback-form-state');
-    formData.email = localData.email;
-    formData.message = localData.message;
-    emailElem.value = localData.email;
-    messageElem.value = localData.message;
+  const localData = loadFromLocalStorage('feedback-form-state');
+
+  if (localData) {
+    const { email, message } = localData;
+
+    formData.email = email;
+    formData.message = message;
+    formElem.elements.email.value = email;
+    formElem.elements.message.value = message;
   }
 });
 
 formElem.addEventListener('submit', e => {
   e.preventDefault();
 
-  const isFilled = formData.email && formData.message;
+  const isFormFilled = formData.email && formData.message;
 
-  if (isFilled) {
+  if (isFormFilled) {
     console.log(formData);
+
     localStorage.removeItem('feedback-form-state');
+
     formData.email = '';
     formData.value = '';
-    emailElem.value = '';
-    messageElem.value = '';
+
+    formElem.reset();
   } else {
     alert('Fill please all fields');
   }
 });
 
 function saveToLocalStorage(key, value) {
-  const json = JSON.stringify(value);
-  localStorage.setItem(key, json);
+  const stringifiedValue = JSON.stringify(value);
+
+  localStorage.setItem(key, stringifiedValue);
 }
 
 function loadFromLocalStorage(key) {
-  const json = localStorage.getItem(key);
-  const data = JSON.parse(json);
-  return data;
+  const stringifiedValue = localStorage.getItem(key);
+  const parsedValue = JSON.parse(stringifiedValue || {});
+
+  return parsedValue;
 }
