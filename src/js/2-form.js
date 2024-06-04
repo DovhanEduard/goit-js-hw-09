@@ -16,7 +16,7 @@ formElem.addEventListener('input', e => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const localData = loadFromLocalStorage('feedback-form-state');
-
+  
   if (localData) {
     const { email, message } = localData;
 
@@ -38,7 +38,7 @@ formElem.addEventListener('submit', e => {
     localStorage.removeItem('feedback-form-state');
 
     formData.email = '';
-    formData.value = '';
+    formData.message = '';
 
     formElem.reset();
   } else {
@@ -54,7 +54,7 @@ function saveToLocalStorage(key, value) {
 
 function loadFromLocalStorage(key) {
   const stringifiedValue = localStorage.getItem(key);
-  const parsedValue = JSON.parse(stringifiedValue || {});
+  const parsedValue = JSON.parse(stringifiedValue || null);
 
   return parsedValue;
 }
